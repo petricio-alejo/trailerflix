@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('partials/head') %>
+<body>
+  <%- include('partials/navbar') %>
+
+  <main class="container text-center py-5">
+    <h1 class="display-1 fw-bold marca">404</h1>
+    <p class="lead">Lo siento, la página que buscas no existe.</p>
+    <p class="text-secondary">Ruta solicitada: <code><%= rutaSolicitada %></code></p>
+    <a href="/" class="btn btn-danger mt-3">Volver al inicio</a>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>
