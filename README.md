@@ -35,15 +35,23 @@ npm install --save mysql2
 
 ## Base de datos
 
-La base se crea y se carga con dos scripts SQL. Ejecutalos **en este orden** (desde MySQL Workbench o la consola):
+La base se crea y se carga con dos scripts SQL, que se ejecutan **en este orden** (desde MySQL Workbench o la consola):
 
-1. `database/01_creacion.sql`: crea la base `trailerflix` (utf8mb4 / utf8mb4_unicode_ci) y las 6 tablas.
-2. `database/02_insercion.sql`: inserta los 30 títulos con sus categorías, géneros y actores.
+0. Crear la base vacía (el script de creación no la crea):
+
+   ```sql
+   CREATE DATABASE trailerflix CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+
+1. `database/trailerflix.sql`: crea las 6 tablas y sus claves foráneas.
+2. `database/insert_data.sql`: inserta las categorías, los 13 géneros, los 139 actores, los 30 títulos y sus relaciones.
 
 ```bash
-mysql -u root -p < database/01_creacion.sql
-mysql -u root -p < database/02_insercion.sql
+mysql -u root -p trailerflix < database/trailerflix.sql
+mysql -u root -p trailerflix < database/insert_data.sql
 ```
+
+> La collation `utf8mb4_unicode_ci` es importante: gracias a ella las búsquedas ignoran tildes y mayúsculas.
 
 > La aplicación **no modifica la estructura** de la base: no usa `sync()` ni crea tablas. Solo lee y escribe datos.
 
@@ -107,8 +115,8 @@ trailerflix/
 ├── utils/
 │   └── formatearContenido.js # Arma cada registro con el formato del JSON original
 ├── database/
-│   ├── 01_creacion.sql       # Script de creación de la base
-│   ├── 02_insercion.sql      # Script de carga de datos
+│   ├── trailerflix.sql       # Script de creación de las tablas
+│   ├── insert_data.sql       # Script de carga de datos
 │   └── trailerflix.json      # JSON original (solo como referencia)
 └── views/
     ├── index.ejs             # Página de bienvenida
@@ -188,7 +196,7 @@ En el JSON original cada título era un objeto con todo junto: la categoría com
 
 La función `utils/formatearContenido.js` hace el camino inverso. Toma un `Contenido` con su `Categoria`, sus `Generos` y sus `Actores`, y devuelve un objeto con las claves del JSON original (`id, titulo, categoria, genero, sinopsis, temporadas, reparto, trailer`). Los géneros y el reparto quedan unidos con `", "`. `NULL` en temporadas se muestra como `"N/A"`, y si no hay trailer, la clave se omite. Todos los endpoints de contenido usan esta función.
 
-> **Orden de géneros y reparto:** las tablas intermedias no guardan la posición de cada género o actor. Por eso se ordenan por su id (`id_genero` / `id_actor`), y en algunos títulos ese orden no coincide con el del JSON original. Por ejemplo, en *Enola Holmes* puede aparecer `"Misterio, Aventura, Comedia"` en lugar de `"Aventura, Misterio, Comedia"`. Los datos son los mismos, solo cambia el orden.
+> **Orden de géneros y reparto:** las tablas intermedias no guardan la posición de cada género o actor. Por eso se ordenan por su id (`id_genero` / `id_actor`), y en algunos títulos ese orden no coincide con el del JSON original. Por ejemplo, en *Enola Holmes* aparece `"Misterio, Aventura, Comedia"` en lugar de `"Aventura, Misterio, Comedia"`. Los datos son los mismos, solo cambia el orden.
 
 > **id_contenido:** en la tabla `contenido` esta columna **no es AUTO_INCREMENT**, y la base no se modifica. Por eso, al crear un contenido, el id nuevo se calcula en JavaScript como el máximo actual más 1, dentro de la misma transacción.
 
@@ -279,7 +287,7 @@ Lista el contenido cuyo título contiene el texto enviado. Es una búsqueda **pa
       "id": 6,
       "titulo": "Enola Holmes",
       "categoria": "Película",
-      "genero": "Aventura, Misterio, Comedia",
+      "genero": "Misterio, Aventura, Comedia",
       "sinopsis": "La hermana menor de Sherlock Holmes decide buscar por su cuenta a su madre desaparecida...",
       "temporadas": "N/A",
       "reparto": "Millie Bobby Brown, Henry Cavill, Sam Claflin, Helena Bonham Carter",
