@@ -46,12 +46,22 @@
               <td>Devuelve id, título y URL del trailer</td>
               <td><a href="/trailer/1">/trailer/1</a> · <a href="/trailer/5">/trailer/5</a> (sin trailer)</td>
             </tr>
+            <tr>
+              <td><code>GET /contenido</code> · <code>GET /contenido/:id</code></td>
+              <td>Listado y detalle por id</td>
+              <td><a href="/contenido">/contenido</a> · <a href="/contenido/1">/contenido/1</a></td>
+            </tr>
+            <tr>
+              <td><code>POST /contenido</code> · <code>PUT /contenido/:id</code> · <code>DELETE /contenido/:id</code></td>
+              <td>Alta, modificación y baja de contenido (JSON)</td>
+              <td>Ver README</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- Catálogo generado dinámicamente desde el array TRAILERFLIX -->
+    <!-- Catálogo generado dinámicamente desde la base de datos MySQL -->
     <section>
       <h2 class="h4 mb-3">Catálogo</h2>
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
